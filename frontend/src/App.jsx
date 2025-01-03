@@ -5,7 +5,7 @@ function App() {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    axios.get('/api/data').then((response) => {
+    axios.get('https://test-d-brown.vercel.app/api/data').then((response) => {
       setData(response.data);
     });
   }, []);
