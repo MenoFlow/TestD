@@ -9,8 +9,11 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 // Activer CORS pour toutes les origines
-app.use(cors());
 
+app.use(cors({
+    origin: 'https://test-d-yvso.vercel.app' // Remplace par l'URL de ton frontend
+  }));
+  
 const con = mysql2.createConnection({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
