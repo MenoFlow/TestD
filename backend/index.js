@@ -32,15 +32,7 @@ con.connect((err) => {
 app.use(express.json());
 
 app.get('/api/data', (req, res) => {
-    console.log(22)
-  con.query('SELECT * FROM test_table', (err, results) => {
-    if (err) {
-      console.error('Error executing query:', err.message);
-      res.status(500).json({ error: 'Database query error' });
-      return;
-    }
-    res.json(results);
-  });
+  console.log(22)
 });
 
 app.listen(port, () => {
