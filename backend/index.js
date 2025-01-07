@@ -132,6 +132,18 @@ app.use('/uploads', express.static('uploads'));
 // Utilisation des routes
 app.use('/api', routes); // Préfixe '/api' pour les routes
 
+// Exemple d'API pour récupérer des données
+app.get('/api/data', (req, res) => {
+  con.query('SELECT * FROM test_table', (err, results) => {
+    if (err) {
+      console.error('Error executing query:', err.message);
+      res.status(500).json({ error: 'Database query error' });
+    } else {
+      res.json(results);
+    }
+  });
+});
+
 // Démarrer le serveur
 app.listen(port, () => {
   console.log(`Serveur démarré sur http://localhost:${port}`);
