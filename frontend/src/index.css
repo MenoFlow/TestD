@@ -13,56 +13,208 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(45deg, #eeeeee, #ffffff); /* Dégradé linéaire */
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+#nav {
+    position: fixed;
+    bottom: 5px;
+    left: 0;
+    width: 100%;
+    z-index: 1000; 
+    margin-left: 0.1px;
 }
 
-button {
+#nav i{
+  font-size: 1.2rem;
+}
+
+
+#header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000; 
+  margin-left: 0.1px;
+}
+
+#header i{
+  font-size: 1.2rem;
+}
+
+#header button{
+  margin-top: 10px;
+}
+
+/* Styles pour le menu latéral */
+.sidebar {
+  position: fixed;
+  top: 0;
+  right: -500px; /* Positionnement par défaut hors de la vue */
+  width: 300px;
+  height: 100%;
+  background: linear-gradient(-45deg,#000000,#353535);
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
+  transition: right 0.3s ease;
+  z-index: 1050; /* Au-dessus du contenu */
+  padding: 20px;
+}
+
+/* Menu ouvert */
+.sidebar.open {
+  right: 0;
+}
+
+/* Masque */
+.backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1040; /* Juste en dessous du menu */
+}
+
+.list-unstyled{
+  font-size: large;
+}
+
+
+.container, .container-fluid{
+  height: 84vh;
+  overflow-y: auto;
+}
+#count div{
+  height: 9rem;
+}
+
+#count h4{
+  margin-top: 2rem
+}
+
+#count h5{
+  margin-top: 1rem;
+}
+
+#transaction{
+  height: 6rem;
+}
+
+#member, #cash, #transaction{
+  border: solid 1px #adadad;
+}
+
+.graph{
+  width: 300px;
+  height: 300px;
+  margin: auto;
+}
+
+#info{
+  margin-top: 3rem;
+}
+
+#photo{
+  height: 11rem;
+}
+
+label, .modal-container2 label{
+  margin-top: 1rem;
+}
+
+.form-control, .form-select{
+  margin-top: 1rem;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-container {
+  background-color: white;
+  padding: 20px;
   border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  width: 400px;
+  text-align: center;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+.modal-container2 {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: auto;
+  height: auto;
+  text-align: center;
+}
+
+.modal-container3 {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 350px;
+  height: auto;
+  text-align: center;
+}
+
+.modal-buttons {
+  margin-top: 20px;
+}
+
+.modal-buttons .btn {
+  margin: 5px;
+  padding: 10px 20px;
+  font-size: 16px;
+}
+
+#coinDash{
+  max-height: 95%;
+}
+
+#cotisationDash, #transactionDash{
+  border: solid 1px #b8b8b8;
+}
+
+#cotaTitle{
+  text-transform: uppercase;
+  background-color: #00582c;
+}
+
+#cotaFooter{
+  text-transform: uppercase;
+  background-color: #750800;
+}
+
+#cotaTab,#transTab{
+  max-height: 72vh;
+}
+
+
+#transTitle{
+  text-transform: uppercase;
+  background-color: #704300;
+}
+
+#user{
+  border-bottom: solid 1px #e4e4e4;
+}
+
+#pdp{
+  height: 9.5rem;
 }

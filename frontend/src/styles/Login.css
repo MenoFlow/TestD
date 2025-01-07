@@ -1,0 +1,15 @@
+.container-fluid{
+    height: 90vh ;
+}
+
+#loginForm label,#loginForm input, #loginForm .btn{
+    margin-top: 25px;
+}
+
+#forgot:hover{
+    text-shadow: gray;
+}
+
+#loginForm{
+    border: solid 1px rgb(151, 151, 151);
+}
