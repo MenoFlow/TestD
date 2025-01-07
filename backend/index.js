@@ -2,9 +2,27 @@ import express from "express";
 import routes from "./Routes/routes.js";
 import cors from 'cors'; // Importer CORS
 import session from 'express-session'; // Importer express-session
+import dotenv from 'dotenv';
+import mysql2 from 'mysql2';
+
+dotenv.config(); // Charger les variables d'environnement
 
 const app = express();
 const port = 3000;
+
+// Configuration de la connexion MySQL
+const pool = mysql2.createPool({
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0
+});
+
+// Promisify les méthodes de pool pour les rendre compatibles avec async/await
+const promisePool = pool.promise();
 
 // Script d'initialisation SQL
 const initializeDatabase = async () => {
@@ -29,7 +47,7 @@ const initializeDatabase = async () => {
     )
     `,
     `
-    INSERT INTO membres (
+    INSERT IGNORE INTO membres (
     telephone,
     nom,
     prenoms,
@@ -60,7 +78,6 @@ const initializeDatabase = async () => {
     '0349876543',
     'president'
     )
-
     `,
     `
     CREATE TABLE IF NOT EXISTS users (
@@ -91,9 +108,9 @@ const initializeDatabase = async () => {
   ];
 
   try {
-    const conn = await pool.getConnection();
+    const conn = await promisePool.getConnection();
     for (const query of queries) {
-      await conn.query(query);
+      await conn.query(query); // Exécuter la requête avec await
     }
     console.log("Base de données initialisée avec succès.");
     conn.release();
@@ -104,7 +121,6 @@ const initializeDatabase = async () => {
 
 // Appel de la fonction d'initialisation lors du démarrage du serveur
 initializeDatabase();
-
 
 // Activer CORS pour permettre les requêtes depuis le frontend
 app.use(cors({
@@ -123,7 +139,7 @@ app.use(session({
   saveUninitialized: false, // Créer une session même si elle est vide
   cookie: {
     // secure: false
-    maxAge: 1000 * 60* 60 * 24
+    maxAge: 1000 * 60 * 60 * 24
   } // Si tu utilises HTTP, sinon true pour HTTPS
 }));
 
@@ -133,15 +149,19 @@ app.use('/uploads', express.static('uploads'));
 app.use('/api', routes); // Préfixe '/api' pour les routes
 
 // Exemple d'API pour récupérer des données
-app.get('/api/data', (req, res) => {
-  con.query('SELECT * FROM test_table', (err, results) => {
-    if (err) {
-      console.error('Error executing query:', err.message);
-      res.status(500).json({ error: 'Database query error' });
-    } else {
-      res.json(results);
-    }
-  });
+app.get('/api/data', async (req, res) => {
+  try {
+    const [results] = await promisePool.query('SELECT * FROM test_table');
+    res.json(results);
+  } catch (err) {
+    console.error('Error executing query:', err.message);
+    res.status(500).json({ error: 'Database query error' });
+  }
+});
+
+// Gestion des routes inexistantes
+app.use((req, res) => {
+  res.status(404).json({ error: 'Route not found' });
 });
 
 // Démarrer le serveur

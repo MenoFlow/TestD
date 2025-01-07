@@ -1,11 +1,14 @@
-import mysql from 'mysql2'
+import dotenv from 'dotenv';
+import mysql from 'mysql2';
+
+dotenv.config(); // Charger les variables d'environnement
 
 const con = mysql.createPool({
 
-    host: "b2pqdoq8smtmtw5bk5ri-mysql.services.clever-cloud.com",
-    user: "uc3ptdsxjgb5sujv",
-    password: "Uuh9X5Q36ynumLSeUSCu",
-    database: "b2pqdoq8smtmtw5bk5ri",
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
     port: "3306"
 })
 
