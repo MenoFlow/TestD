@@ -10,7 +10,7 @@ function App() {
   //   });
   // }, []);
   useEffect(() => {
-    axios.get('/api/data').then((response) => {
+    axios.get('https://test-d-two.vercel.app/api/data').then((response) => {
       setData(response.data);
     });
   }, []);
