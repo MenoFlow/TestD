@@ -1,50 +1,66 @@
-import express from "express";
-import routes from "./Routes/routes.js";
-import cors from 'cors'; // Importer CORS
-import session from 'express-session'; // Importer express-session
-import dotenv from 'dotenv';
+import express from 'express';
 import mysql2 from 'mysql2';
+import dotenv from 'dotenv';
+import cors from 'cors'; // Importer cors
 
 dotenv.config(); // Charger les variables d'environnement
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
-// Activer CORS pour permettre les requêtes depuis le frontend
-app.use(cors({
-  origin: 'https://test-d-yvso.vercel.app', // Utiliser une variable d'environnement pour l'URL frontend
-  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Restreindre aux méthodes nécessaires
-  credentials: true // Autoriser les cookies ou les en-têtes d'authentification
-}));
+  // Activer CORS pour permettre les requêtes depuis le frontend
+  app.use(cors({
+    origin: process.env.FRONTEND_URL || 'https://test-d-yvso.vercel.app', // Utiliser une variable d'environnement pour l'URL frontend
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Restreindre aux méthodes nécessaires
+    credentials: true // Autoriser les cookies ou les en-têtes d'authentification
+  }));
 
-// Middleware pour analyser le corps des requêtes JSON
+// Configurer la connexion MySQL avec un pool
+const con = mysql2.createPool({
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0
+});
+
+// Vérifier la connexion à la base de données
+con.getConnection((err) => {
+  if (err) {
+    console.error('Error connecting to MySQL:', err.message);
+    process.exit(1); // Arrêter le serveur si la connexion échoue
+  } else {
+    console.log('Connected to MySQL');
+  }
+});
+ 
+// Middleware pour analyser les requêtes JSON
 app.use(express.json());
 
-// Configuration de la session
-app.use(session({
-  secret: 'menoh22Test', // Change ce secret pour plus de sécurité
-  resave: false, // Ne pas sauvegarder la session si elle n'est pas modifiée
-  saveUninitialized: false, // Créer une session même si elle est vide
-  cookie: {
-    // secure: false
-    maxAge: 1000 * 60 * 60 * 24
-  } // Si tu utilises HTTP, sinon true pour HTTPS
-}));
-
-app.use('/uploads', express.static('uploads'));
-
-// Utilisation des routes
-app.use('/api', routes); // Préfixe '/api' pour les routes
-
 // Exemple d'API pour récupérer des données
-app.get('/api/data', async (req, res) => {
-  try {
-    const [results] = await promisePool.query('SELECT * FROM test_table');
-    res.json(results);
-  } catch (err) {
-    console.error('Error executing query:', err.message);
-    res.status(500).json({ error: 'Database query error' });
-  }
+app.get('/api/data', (req, res) => {
+  con.query('SELECT * FROM test_table', (err, results) => {
+    if (err) {
+      console.error('Error executing query:', err.message);
+      res.status(500).json({ error: 'Database query error' });
+    } else {
+      res.json(results);
+    }
+  });
+});
+
+app.get('/api/membres', (req, res) => {
+  const sql = 'SELECT * FROM membres'; // Votre requête SQL pour récupérer tous les membres
+
+  con.query(sql, (err, results) => {
+      if (err) {
+          console.error('Erreur lors de la récupération des membres:', err);
+          return res.status(500).json({ message: 'Erreur serveur' });
+      }
+      res.status(200).json(results); // Renvoie les résultats sous forme de JSON
+  });
 });
 
 // Gestion des routes inexistantes
@@ -52,7 +68,7 @@ app.use((req, res) => {
   res.status(404).json({ error: 'Route not found' });
 });
 
-// Démarrer le serveur
+// Lancer le serveur
 app.listen(port, () => {
-  console.log(`Serveur démarré sur http://localhost:${port}`);
+  console.log(`Server running on port ${port}`);
 });
