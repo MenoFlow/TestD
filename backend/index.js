@@ -3,38 +3,60 @@ import mysql2 from 'mysql2';
 import dotenv from 'dotenv';
 import cors from 'cors'; // Importer cors
 
-dotenv.config();
+dotenv.config(); // Charger les variables d'environnement
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Activer CORS pour toutes les origines
-
+// Activer CORS pour permettre les requêtes depuis le frontend
 app.use(cors({
-    origin: 'https://test-d-yvso.vercel.app' // Remplace par l'URL de ton frontend
-  }));
-  
-const con = mysql2.createConnection({
+  origin: process.env.FRONTEND_URL || 'https://test-d-yvso.vercel.app', // Utiliser une variable d'environnement pour l'URL frontend
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Restreindre aux méthodes nécessaires
+  credentials: true // Autoriser les cookies ou les en-têtes d'authentification
+}));
+
+// Configurer la connexion MySQL avec un pool
+const con = mysql2.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0
 });
 
-con.connect((err) => {
+// Vérifier la connexion à la base de données
+con.getConnection((err) => {
   if (err) {
     console.error('Error connecting to MySQL:', err.message);
-    return;
+    process.exit(1); // Arrêter le serveur si la connexion échoue
+  } else {
+    console.log('Connected to MySQL');
   }
-  console.log('Connected to MySQL');
 });
 
+// Middleware pour analyser les requêtes JSON
 app.use(express.json());
 
+// Exemple d'API pour récupérer des données
 app.get('/api/data', (req, res) => {
-  console.log(22)
+  con.query('SELECT * FROM test_table', (err, results) => {
+    if (err) {
+      console.error('Error executing query:', err.message);
+      res.status(500).json({ error: 'Database query error' });
+    } else {
+      res.json(results);
+    }
+  });
 });
 
+// Gestion des routes inexistantes
+app.use((req, res) => {
+  res.status(404).json({ error: 'Route not found' });
+});
+
+// Lancer le serveur
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });

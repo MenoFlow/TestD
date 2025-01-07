@@ -7,10 +7,13 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'https://test-d-brown.vercel.app', // URL de ton backend local
+        target: 'https://test-d-brown.vercel.app:3000', // URL de ton backend local
         changeOrigin: true,
         secure: false,
       },
     },
   },
 });
+
+
+
